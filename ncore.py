@@ -13,12 +13,11 @@ The file tree on Netcord Servers:
         -LANServerList.cfg
         -Servers
             -[(ServerName)blablabla]
-                -users.cfg
-                -join.cfg
-                -role.cfg
-                -Channels
-                    -[(Channel Name)blablabla]
-                        -chat.txt
+                -icon.png   (size must be 100x100)
+                -users.cfg  (1.0.5 features)
+                -join.cfg   (1.0.5 features)
+                -role.cfg   (1.0.5 features)
+                -chat.txt
 '''
 def getServerListOnLAN(web):
     try:
@@ -50,12 +49,53 @@ def joinServer(web,servername,username,psd=None):
             return 500
     except:
         return 404
+def FlashMessages(web,servername):
+    #try:
+    try:
+       chats = open(web+"/NetcordServices/Servers/"+servername+"/chat.txt",'r')
+    except:
+        a=False
+        while a:
+            try:
+                chats = open(web+"/NetcordServices/Servers/"+servername+"/chat.txt",'r')
+                a=True
+            except:
+                pass
+    txt = ''
+    for i in chats.readlines():
+        txt = txt+i
+    chats.close()
+    return txt
+    #except:
+        #return 404
+def SendMessages(web,servername,msg):
+    try:
+        try:
+           chats = open(web+"/NetcordServices/Servers/"+servername+"/chat.txt",'a')
+        except:
+            a=False
+            while a:
+                try:
+                    chats = open(web+"/NetcordServices/Servers/"+servername+"/chat.txt",'a')
+                    a=True
+                except:
+                    pass
+        chats.write(msg+"\n")
+        chats.close()
+    except:
+        return 404
 def Connect(web,username,password):
     try:
         try:
            lanusers = open(web+"/NetcordServices/userlist.cfg",'r')
         except:
-            return 404
+            a=False
+            while a:
+                try:
+                    lanusers = open(web+"/NetcordServices/userlist.cfg",'r')
+                    a=True
+                except:
+                    pass
         if username+"$"+password in lanusers.readlines():
             lanusers.close()
             return 200
